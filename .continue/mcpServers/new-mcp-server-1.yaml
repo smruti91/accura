@@ -1,0 +1,11 @@
+name: New MCP server
+version: 0.0.1
+schema: v1
+mcpServers:
+  - name: "New MCP server"
+    type: stdio
+    command: 'C:\Program Files\nodejs\npx.cmd'  # <-- Full Path (Note the double backslashes for JSON/YAML escaping)
+    args:
+      - "-y"
+      - "@modelcontextprotocol/server-sqlite"
+    env: {}

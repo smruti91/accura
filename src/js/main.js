@@ -31,26 +31,26 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     // Simple Form Validation Feedback (Contact & Login)
-    const forms = document.querySelectorAll('form');
-    forms.forEach(form => {
-        form.addEventListener('submit', (e) => {
-            e.preventDefault();
-            // Basic simulation of a submit action
-            const btn = form.querySelector('button[type="submit"]');
-            const originalText = btn.innerHTML;
-            btn.innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Processing...';
-            btn.disabled = true;
+    // const forms = document.querySelectorAll('form');
+    // forms.forEach(form => {
+    //     form.addEventListener('submit', (e) => {
+    //         e.preventDefault();
+    //         // Basic simulation of a submit action
+    //         const btn = form.querySelector('button[type="submit"]');
+    //         const originalText = btn.innerHTML;
+    //         btn.innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Processing...';
+    //         btn.disabled = true;
 
-            setTimeout(() => {
-                btn.innerHTML = 'Success!';
-                btn.classList.replace('btn-primary-custom', 'btn-success');
-                setTimeout(() => {
-                    btn.innerHTML = originalText;
-                    btn.disabled = false;
-                    btn.classList.replace('btn-success', 'btn-primary-custom');
-                    form.reset();
-                }, 2000);
-            }, 1500);
-        });
-    });
+    //         setTimeout(() => {
+    //             btn.innerHTML = 'Success!';
+    //             btn.classList.replace('btn-primary-custom', 'btn-success');
+    //             setTimeout(() => {
+    //                 btn.innerHTML = originalText;
+    //                 btn.disabled = false;
+    //                 btn.classList.replace('btn-success', 'btn-primary-custom');
+    //                 form.reset();
+    //             }, 2000);
+    //         }, 1500);
+    //     });
+    // });
 });

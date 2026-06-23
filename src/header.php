@@ -3,7 +3,7 @@
     <title>
         <?php 
             // If $pageTitle is set, use it. Otherwise, use a default title.
-            echo isset($pageTitle) ? $pageTitle : "Accura Gold Minerals Testing Labs"; 
+            echo isset($pageTitle) ? $pageTitle : "Accura Gold Minerals Testing Labs";  
         ?>
     </title>
     <meta name="description" content="Accura Gold Minerals Testing Labs Private Limited provides advanced analytical testing solutions for the minerals industry.">
