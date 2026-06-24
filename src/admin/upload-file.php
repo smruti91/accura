@@ -33,7 +33,21 @@ if($_SERVER['REQUEST_METHOD'] === 'POST'){
     }
 
     // Generate 10 digit unique number
-    $reportNo = str_pad(mt_rand(1000000000, 9999999999), 10, '0', STR_PAD_LEFT);
+    // $reportNo = str_pad(mt_rand(1000000000, 9999999999), 10, '0', STR_PAD_LEFT);
+
+    function generateReportNo($length = 10)
+    {
+        $characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+        $reportNo = '';
+
+        for ($i = 0; $i < $length; $i++) {
+            $reportNo .= $characters[random_int(0, strlen($characters) - 1)];
+        }
+
+        return $reportNo;
+    }
+
+    $reportNo = generateReportNo();
 
     $newFile = time().'_'.$file['name'];
     $path = "uploads/".$newFile;

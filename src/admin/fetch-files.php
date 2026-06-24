@@ -1,46 +1,109 @@
 <?php
+
 include '../config.php';
 
-$start  = $_POST['start'];
-$length = $_POST['length'];
-$search = $_POST['search']['value'];
+header('Content-Type: application/json');
+
+$draw   = isset($_POST['draw']) ? (int)$_POST['draw'] : 1;
+$start  = isset($_POST['start']) ? (int)$_POST['start'] : 0;
+$length = isset($_POST['length']) ? (int)$_POST['length'] : 10;
+
+$search = '';
+
+if(isset($_POST['search']['value'])){
+    $search = trim($_POST['search']['value']);
+}
 
 $where = "WHERE is_deleted = 0";
 
 if(!empty($search)){
-    $where .= " AND (file_name LIKE '%$search%' OR report_no LIKE '%$search%')";
+
+    $search = $db->real_escape_string($search);
+
+    $where .= "
+        AND (
+            file_name LIKE '%{$search}%'
+            OR report_no LIKE '%{$search}%'
+            OR description LIKE '%{$search}%'
+        )
+    ";
 }
 
-$total = $db->query("SELECT COUNT(*) as count FROM uploaded_files WHERE is_deleted=0")->fetch_assoc()['count'];
-
-$data = $db->query("
-    SELECT * FROM uploaded_files
-    $where
-    ORDER BY id DESC
-    LIMIT $start,$length
+/* Total Records */
+$totalQuery = $db->query("
+    SELECT COUNT(*) AS total
+    FROM uploaded_files
+    WHERE is_deleted = 0
 ");
 
-$result = [];
+$totalRecords = (int)$totalQuery->fetch_assoc()['total'];
 
-while($row = $data->fetch_assoc()){
+/* Filtered Records */
+$filteredQuery = $db->query("
+    SELECT COUNT(*) AS total
+    FROM uploaded_files
+    $where
+");
 
-    $result[] = [
+$filteredRecords = (int)$filteredQuery->fetch_assoc()['total'];
+
+/* Data */
+$query = "
+    SELECT *
+    FROM uploaded_files
+    $where
+    ORDER BY id DESC
+    LIMIT $start, $length
+";
+
+$result = $db->query($query);
+
+$data = [];
+
+while($row = $result->fetch_assoc()){
+
+    $data[] = [
+
         "id" => $row['id'],
+
         "report_no" => $row['report_no'],
-        "file_name" => $row['file_name'],
-        "report_date" => $row['report_date'],
-        "description" => $row['description'],
-        "file" => '<a class="btn btn-info btn-sm" target="_blank" href="uploads/'.$row['uploaded_file'].'">View</a>',
+
+        "file_name" => htmlspecialchars($row['file_name']),
+
+        "report_date" => date(
+            'd-m-Y',
+            strtotime($row['report_date'])
+        ),
+
+        "description" => htmlspecialchars($row['description']),
+
+        "file" => '
+            <a href="./uploads/'.$row['uploaded_file'].'"
+               target="_blank"
+               class="btn btn-info btn-sm">
+               View
+            </a>
+        ',
+
         "action" => '
-            <a href="edit.php?id='.$row['id'].'" class="btn btn-warning btn-sm">Edit</a>
-            <a href="delete.php?id='.$row['id'].'" class="btn btn-danger btn-sm">Delete</a>
+            <button class="btn btn-warning btn-sm editBtn"
+                data-id="'.$row['id'].'">
+                Edit
+            </button>
+
+            <button class="btn btn-danger btn-sm deleteBtn"
+                data-id="'.$row['id'].'">
+                Delete
+            </button>
         '
     ];
 }
 
 echo json_encode([
-    "draw" => intval($_POST['draw']),
-    "recordsTotal" => $total,
-    "recordsFiltered" => $total,
-    "data" => $result
+    "draw" => (int)$draw,
+    "recordsTotal" => (int)$totalRecords,
+    "recordsFiltered" => (int)$filteredRecords,
+    "data" => $data
 ]);
+exit;
+
