@@ -220,6 +220,96 @@ if (
         </div>
 
     </div>
+   
+<div class="modal fade" id="editModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+
+            <form id="editForm" enctype="multipart/form-data">
+
+                <input type="hidden" name="id" id="edit_id">
+
+                <div class="modal-header bg-warning">
+                    <h5 class="modal-title">Edit Report</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="mb-3 col-md-6">
+                            <label>File Name</label>
+                            <input type="text"
+                                class="form-control"
+                                name="file_name"
+                                id="edit_file_name"
+                                required>
+                        </div>
+
+                        <div class="mb-3 col-md-6">
+                            <label>Date</label>
+                            <input type="date"
+                                class="form-control"
+                                name="report_date"
+                                id="edit_report_date"
+                                required>
+                        </div>
+                    </div>
+                   
+
+                    <div class="mb-3">
+                        <label>Description</label>
+                        <textarea class="form-control"
+                                  name="description"
+                                  id="edit_description"></textarea>
+                    </div>
+
+                    <div class="mb-3 upload-report-div">
+                        <label>Replace File (Optional)</label>
+                        <input type="file"
+                               class="form-control"
+                               name="upload_file"
+                               accept=".pdf,.xls,.xlsx">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Current Report</label>
+
+                        <div id="currentFileSection" class="d-flex gap-2">
+
+                            <a id="viewReportBtn"
+                            href="#"
+                            target="_blank"
+                            class="btn btn-info btn-sm">
+                                View Report
+                            </a>
+
+                            <button type="button"
+                                    id="deleteReportBtn"
+                                    class="btn btn-danger btn-sm">
+                                Delete Report
+                            </button>
+
+                        </div>
+
+                        <small class="text-muted">
+                            Delete current report and upload a new one.
+                        </small>
+                    </div>
+
+                </div>
+
+                <div class="modal-footer">
+                    <button type="submit"
+                            id="updateBtn"
+                            class="btn btn-warning">
+                        Update
+                    </button>
+                </div>
+
+            </form>
+
+        </div>
+    </div>
+</div>
 
     <script>
         function toggleSidebar() {
@@ -349,6 +439,86 @@ if (
 
             new bootstrap.Toast(toast).show();
         }
+
+      $(document).on('click', '.editBtn', function () {
+
+            let id = $(this).data('id');
+
+            $.ajax({
+                url: 'get-file.php',
+                type: 'GET',
+                data: { id: id },
+                dataType: 'json',
+                success: function (res) {
+
+                    $('#edit_id').val(res.id);
+                    $('#edit_file_name').val(res.file_name);
+                    $('#edit_report_date').val(res.report_date);
+                    $('#edit_description').val(res.description);
+
+                    if (res.uploaded_file) {
+
+                        $('#viewReportBtn')
+                            .attr('href', './uploads/' + res.uploaded_file)
+                            .show();
+
+                        $('#deleteReportBtn')
+                            .data('id', res.id)
+                            .show();
+                        $('.upload-report-div').hide();
+                    } else {
+
+                        $('#viewReportBtn').hide();
+                        $('#deleteReportBtn').hide();
+                        $('.upload-report-div').show();
+                    }
+
+                    new bootstrap.Modal(
+                        document.getElementById('editModal')
+                    ).show();
+                }
+            });
+
+        });
+    $(document).on('click', '#deleteReportBtn', function () {
+
+        if (!confirm('Delete current report?')) {
+            return;
+        }
+
+        let id = $(this).data('id');
+
+        $.ajax({
+
+            url: 'delete-report.php',
+
+            type: 'POST',
+
+            data: {
+                id: id
+            },
+
+            dataType: 'json',
+
+            success: function (res) {
+
+                showToast(res.message, res.status);
+
+                if (res.status === 'success') {
+
+                    $('#viewReportBtn').hide();
+                    $('#deleteReportBtn').hide();
+                    $('.upload-report-div').show();
+                    // Keep modal open
+                    $('input[name="upload_file"]').val('');
+
+                }
+
+            }
+
+        });
+
+    });
     </script>
 </body>
 
