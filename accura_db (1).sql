@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: db
--- Generation Time: Jun 24, 2026 at 06:59 AM
+-- Generation Time: Jun 25, 2026 at 11:15 AM
 -- Server version: 8.0.46
 -- PHP Version: 8.3.31
 
@@ -20,6 +20,29 @@ SET time_zone = "+00:00";
 --
 -- Database: `accura_db`
 --
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `contact_messages`
+--
+
+CREATE TABLE `contact_messages` (
+  `id` int NOT NULL,
+  `name` varchar(150) NOT NULL,
+  `email` varchar(255) NOT NULL,
+  `subject` varchar(255) NOT NULL,
+  `message` text NOT NULL,
+  `status` tinyint DEFAULT '0',
+  `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+--
+-- Dumping data for table `contact_messages`
+--
+
+INSERT INTO `contact_messages` (`id`, `name`, `email`, `subject`, `message`, `status`, `created_at`) VALUES
+(1, 'smruti', 'test@gmail.com', 'test test', 'test message', 1, '2026-06-25 10:12:11');
 
 -- --------------------------------------------------------
 
@@ -42,7 +65,7 @@ CREATE TABLE `tbl_users` (
 --
 
 INSERT INTO `tbl_users` (`id`, `name`, `username`, `password`, `status`, `created_at`, `update_at`) VALUES
-(1, 'ADMIN', 'Admin', '$2y$10$fpwHabTrZEwlXZy21P75nOsPppAX6L7PNJEtxXPA62tg2KEfyLh5W', 1, '2026-06-23 10:32:28', '2026-06-23 10:32:28');
+(1, 'ADMIN', 'Admin', '$2y$10$g/1FjSYY.j2tMev8G4iYu.53lItyVT6PuFUc7Sw37KJMmTd4qYnAa', 1, '2026-06-23 10:32:28', '2026-06-23 10:32:28');
 
 -- --------------------------------------------------------
 
@@ -68,20 +91,28 @@ CREATE TABLE `uploaded_files` (
 INSERT INTO `uploaded_files` (`id`, `file_name`, `report_date`, `description`, `uploaded_file`, `created_at`, `report_no`, `is_deleted`) VALUES
 (1, 'test', '2026-06-24', 'test description', '1782278147_motp_certificate (15).pdf', '2026-06-24 05:15:47', '2056142415', 0),
 (2, 'Test 2', '2026-06-25', 'test desc', '1782279585_ITMS (1).xlsx', '2026-06-24 05:39:45', '7660318763', 0),
-(3, 'Test 3', '2026-06-25', 'test 456', '1782279713_motp_certificate (13).pdf', '2026-06-24 05:41:53', '4898090542', 0),
 (4, 'test3', '2026-06-25', 'test', '1782279808_motp_certificate (12).pdf', '2026-06-24 05:43:28', '1978735721', 0),
 (5, 'tes6', '2026-06-17', 'test 67', '1782279870_motp_certificate (12).pdf', '2026-06-24 05:44:30', '8437894624', 0),
 (6, 'test7', '2026-06-29', 'test890', '1782279967_motp_certificate (12).pdf', '2026-06-24 05:46:07', '4795606500', 0),
 (7, 'test', '2026-06-22', 'ftyhtb  rtet', '1782280044_motp_certificate (12).pdf', '2026-06-24 05:47:24', '1651477362', 0),
-(8, 'test7', '2026-06-05', 'testy hfht', '1782280165_motp_certificate (13).pdf', '2026-06-24 05:49:25', '2643789334', 0),
+(8, 'test 7', '2026-06-05', 'testy testing', '1782363651_1782282283_ITMS11.xlsx', '2026-06-24 05:49:25', '2643789334', 0),
 (9, 'test 56342', '2026-06-25', 'test rre', '1782280534_motp_certificate (13).pdf', '2026-06-24 05:55:34', '5007210896', 0),
-(10, 'test', '2026-06-25', '4353', '1782280641_motp_certificate (12).pdf', '2026-06-24 05:57:21', '1277882875', 0),
-(11, 'test5', '2026-06-17', '5ghfbdfg', '1782281337_motp_certificate (14).pdf', '2026-06-24 06:08:57', '3752925937', 0),
-(12, 'tes890', '2026-06-26', 'tye ertet', '1782282283_ITMS (1).xlsx', '2026-06-24 06:24:43', '9137358960', 0);
+(10, 'test 5', '2026-06-25', 'test description', '', '2026-06-24 05:57:21', '1277882875', 0),
+(11, 'test5', '2026-06-16', 'update tes', '', '2026-06-24 06:08:57', '3752925937', 0),
+(12, 'test 891', '2026-06-27', 'test update 3', '1782362679_1782282283_ITMS11.xlsx', '2026-06-24 06:24:43', '9137358960', 0),
+(13, 'test report', '2026-06-24', 'test sedcription 45', '1782364634_1782282283_ITMS (1) (1).xlsx', '2026-06-25 05:17:14', 'ZL90RVS7UR', 0);
 
 --
 -- Indexes for dumped tables
 --
+
+--
+-- Indexes for table `contact_messages`
+--
+ALTER TABLE `contact_messages`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `idx_email` (`email`),
+  ADD KEY `idx_created_at` (`created_at`);
 
 --
 -- Indexes for table `tbl_users`
@@ -94,11 +125,18 @@ ALTER TABLE `tbl_users`
 --
 ALTER TABLE `uploaded_files`
   ADD PRIMARY KEY (`id`),
-  ADD UNIQUE KEY `report_no` (`report_no`);
+  ADD UNIQUE KEY `report_no` (`report_no`),
+  ADD UNIQUE KEY `uq_report_no` (`report_no`);
 
 --
 -- AUTO_INCREMENT for dumped tables
 --
+
+--
+-- AUTO_INCREMENT for table `contact_messages`
+--
+ALTER TABLE `contact_messages`
+  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
 -- AUTO_INCREMENT for table `tbl_users`
@@ -110,7 +148,7 @@ ALTER TABLE `tbl_users`
 -- AUTO_INCREMENT for table `uploaded_files`
 --
 ALTER TABLE `uploaded_files`
-  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=13;
+  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=14;
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;

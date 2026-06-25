@@ -39,7 +39,12 @@ if (
                     <div class="card dashboard-card card-orange">
                         <div class="card-body d-flex justify-content-between align-items-center">
                             <div>
-                                <h3>150</h3>
+                                <?php
+                                $result = $db->query("SELECT COUNT(*) AS total_reports FROM uploaded_files");
+                                $row = $result->fetch_assoc();
+                                $totalReports = $row['total_reports'];
+                                ?>
+                                <h3><?= $totalReports; ?></h3>
                                 <p class="mb-0">Total Reports</p>
                             </div>
                             <i class="fas fa-file card-icon"></i>
@@ -51,37 +56,20 @@ if (
                     <div class="card dashboard-card card-dark">
                         <div class="card-body d-flex justify-content-between align-items-center">
                             <div>
-                                <h3>58</h3>
-                                <p class="mb-0">Uploaded Files</p>
+                                <?php
+                                $result = $db->query("SELECT COUNT(*) AS total_messages FROM contact_messages ");
+                                $row = $result->fetch_assoc();
+                                $totalMessages = $row['total_messages'];
+                                ?>
+                                <h3><?= $totalMessages; ?></h3>
+                                <p class="mb-0">Total Messages</p>
                             </div>
-                            <i class="fas fa-cloud-upload-alt card-icon"></i>
+                            <i class="fas fa-envelope card-icon"></i>
                         </div>
                     </div>
                 </div>
 
-                <div class="col-lg-3 col-md-6">
-                    <div class="card dashboard-card card-orange">
-                        <div class="card-body d-flex justify-content-between align-items-center">
-                            <div>
-                                <h3>35</h3>
-                                <p class="mb-0">Users</p>
-                            </div>
-                            <i class="fas fa-users card-icon"></i>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="col-lg-3 col-md-6">
-                    <div class="card dashboard-card card-dark">
-                        <div class="card-body d-flex justify-content-between align-items-center">
-                            <div>
-                                <h3>10</h3>
-                                <p class="mb-0">Pending Files</p>
-                            </div>
-                            <i class="fas fa-clock card-icon"></i>
-                        </div>
-                    </div>
-                </div>
+                
 
             </div>
 
@@ -184,17 +172,7 @@ if (
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        <?php $result = $db->query(" SELECT * FROM uploaded_files ORDER BY id DESC ");
-                                        while ($row = $result->fetch_assoc()): ?>
-                                            <tr>
-                                                <td><?= $row['id']; ?></td>
-                                                <td><?= htmlspecialchars($row['file_name']); ?></td>
-                                                <td><?= date('d-m-Y', strtotime($row['report_date'])); ?></td>
-                                                <td><?= htmlspecialchars($row['description']); ?></td>
-                                                <td> <a href="uploads/<?= $row['uploaded_file']; ?>" target="_blank" class="btn btn-sm btn-info"> View File </a> </td>
-                                                <td> <a href="edit-file.php?id=<?= $row['id']; ?>" class="btn btn-sm btn-warning"> <i class="fa fa-edit"></i> </a> <a href="delete-file.php?id=<?= $row['id']; ?>" onclick="return confirm('Delete this file?')" class="btn btn-sm btn-danger"> <i class="fa fa-trash"></i> </a> </td>
-                                            </tr>
-                                        <?php endwhile; ?>
+                                       
                                     </tbody>
                                 </table>
 
@@ -270,7 +248,7 @@ if (
                                name="upload_file"
                                accept=".pdf,.xls,.xlsx">
                     </div>
-                    <div class="mb-3">
+                    <div class="mb-3 current-report-div">
                         <label class="form-label">Current Report</label>
 
                         <div id="currentFileSection" class="d-flex gap-2">
@@ -287,12 +265,12 @@ if (
                                     class="btn btn-danger btn-sm">
                                 Delete Report
                             </button>
-
+                            <!-- <small class="text-muted">
+                                Delete current report and upload a new one.
+                            </small> -->
                         </div>
 
-                        <small class="text-muted">
-                            Delete current report and upload a new one.
-                        </small>
+                        
                     </div>
 
                 </div>
@@ -325,7 +303,7 @@ if (
     <script src="https://cdn.datatables.net/1.13.8/js/dataTables.bootstrap5.min.js"></script>
 
     <script>
-        $(document).ready(function() {
+     
           $.fn.dataTable.ext.errMode = 'throw';
           var table = $('#reportTable').DataTable({
                 processing: true,
@@ -358,7 +336,7 @@ if (
                 ]
             });
 
-        });
+       
     
         document.getElementById("uploadForm").addEventListener("submit", function(e) {
             e.preventDefault();
@@ -470,6 +448,7 @@ if (
 
                         $('#viewReportBtn').hide();
                         $('#deleteReportBtn').hide();
+                        $('.current-report-div').hide();
                         $('.upload-report-div').show();
                     }
 
@@ -480,6 +459,41 @@ if (
             });
 
         });
+    $(document).on('click', '.deleteBtn', function () {
+
+        if (!confirm('Delete current report?')) {
+            return;
+        }
+
+        let id = $(this).data('id');
+
+        $.ajax({
+
+            url: 'delete.php',
+
+            type: 'POST',
+
+            data: {
+                id: id
+            },
+
+            dataType: 'json',
+
+            success: function (res) {
+
+                showToast(res.message, res.status);
+
+                if (res.status === 'success') {
+
+                    table.ajax.reload(null, false);
+
+                }
+
+            }
+
+        });
+
+    });
     $(document).on('click', '#deleteReportBtn', function () {
 
         if (!confirm('Delete current report?')) {
@@ -508,6 +522,7 @@ if (
 
                     $('#viewReportBtn').hide();
                     $('#deleteReportBtn').hide();
+                    $('.current-report-div').hide();
                     $('.upload-report-div').show();
                     // Keep modal open
                     $('input[name="upload_file"]').val('');
@@ -519,6 +534,56 @@ if (
         });
 
     });
+
+    $('#editForm').on('submit', function(e){
+
+        e.preventDefault();
+
+        let formData = new FormData(this);
+
+        $('#updateBtn')
+            .prop('disabled', true)
+            .html('Updating... <span class="spinner-border spinner-border-sm"></span>');
+
+        $.ajax({
+            url: 'update-file.php',
+            type: 'POST',
+            data: formData,
+            processData: false,
+            contentType: false,
+            dataType: 'json',
+
+            success: function(res){
+
+                showToast(res.message, res.status);
+
+                if(res.status === 'success'){
+
+                    table.ajax.reload(null, false);
+
+                    bootstrap.Modal
+                        .getInstance(document.getElementById('editModal'))
+                        .hide();
+                }
+            },
+
+            error: function(){
+
+                showToast('Something went wrong', 'error');
+
+            },
+
+            complete: function(){
+
+                $('#updateBtn')
+                    .prop('disabled', false)
+                    .html('Update');
+
+            }
+        });
+
+    });
+
     </script>
 </body>
 

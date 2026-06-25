@@ -79,9 +79,9 @@ if (
     // Delete old file if exists
     if (
         !empty($currentFile) &&
-        file_exists('../uploads/' . $currentFile)
+        file_exists('./uploads/' . $currentFile)
     ) {
-        unlink('../uploads/' . $currentFile);
+        unlink('./uploads/' . $currentFile);
     }
 
     // Upload new file
@@ -95,7 +95,7 @@ if (
 
     move_uploaded_file(
         $_FILES['upload_file']['tmp_name'],
-        '../uploads/' . $newFileName
+        './uploads/' . $newFileName
     );
 }
 

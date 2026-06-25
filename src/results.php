@@ -33,31 +33,24 @@
                             <p class="text-muted">Enter your unique Test ID to download or view your testing results.</p>
                         </div>
                         
-                        <form action="results.php" method="GET" class="px-md-5">
+                        <form id="reportSearchForm" class="px-md-5">
                             <div class="row g-2 justify-content-center">
                                 <div class="col-12 col-md-8">
                                     <div class="input-group input-group-lg shadow-sm">
                                         <span class="input-group-text bg-white border-primary text-primary">
                                             <i class="fa-solid fa-magnifying-glass"></i>
                                         </span>
-                                        <input type="text" class="form-control border-primary border-start-0 ps-0" name="test_id" placeholder="e.g. AG-2026-98765" required value="<?= isset($_GET['test_id']) ? htmlspecialchars($_GET['test_id']) : '' ?>">
+                                        <input type="text" class="form-control border-primary border-start-0 ps-0" name="report_no" id="report_no"  placeholder="e.g. AG02698765" required >
                                     </div>
                                 </div>
                                 <div class="col-12 col-md-4">
-                                    <button class="btn btn-primary-custom btn-lg w-100 h-100 px-4" type="submit">Search</button>
+                                    <button class="btn btn-primary-custom btn-lg w-100 h-100 px-4" type="submit" id="searchBtn">Search</button>
                                 </div>
                             </div>
                         </form>
-
-                        <?php if (isset($_GET['test_id']) && !empty($_GET['test_id'])): ?>
-                            <!-- Simulated Results Display -->
-                            <div class="mt-5 pt-4 border-top text-start text-dark">
-                                <h5>Search Results for: <strong><?= htmlspecialchars($_GET['test_id']) ?></strong></h5>
-                                <div class="alert alert-info mt-3" role="alert">
-                                    <i class="fa-solid fa-circle-info me-2"></i> No records found for this Test ID. Please ensure the ID is correct or contact our support team.
-                                </div>
-                            </div>
-                        <?php endif; ?>
+                        <hr>
+                        <div id="result-div" ></div>
+                
                     </div>
                 </div>
             </div>
@@ -69,7 +62,140 @@
 
     <!-- Bootstrap JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
     <!-- Custom JS -->
     <script src="js/main.js"></script>
+
+    <script>
+$('#reportSearchForm').submit(function(e){
+
+    e.preventDefault();
+
+    let reportNo = $('#report_no').val().trim();
+
+    if(reportNo === ''){
+        return;
+    }
+
+    $('#searchBtn')
+        .prop('disabled', true)
+        .html(
+            'Searching... <span class="spinner-border spinner-border-sm"></span>'
+        );
+
+    $('#result-div').html(`
+        <div class="text-center py-4">
+            <div class="spinner-border text-warning"></div>
+        </div>
+    `);
+
+    $.ajax({
+
+        url:'search-report.php',
+
+        type:'POST',
+
+        data:{
+            report_no:reportNo
+        },
+
+        dataType:'json',
+
+        success:function(res){
+
+            if(res.status === 'success'){
+
+                $('#result-div').html(`
+                    <div class="card border-success mt-4">
+
+                        <div class="card-header bg-success text-white">
+                            Report Found
+                        </div>
+
+                        <div class="card-body">
+
+                            <div class="row">
+
+                                <div class="col-md-6 mb-3">
+                                    <strong>Report Number:</strong><br>
+                                    ${res.data.report_no}
+                                </div>
+
+                                <div class="col-md-6 mb-3">
+                                    <strong>Report Date:</strong><br>
+                                    ${res.data.report_date}
+                                </div>
+
+                                <div class="col-md-6 mb-3">
+                                    <strong>File Name:</strong><br>
+                                    ${res.data.file_name}
+                                </div>
+
+                                <div class="col-md-12 mb-3">
+                                    <strong>Description:</strong><br>
+                                    ${res.data.description}
+                                </div>
+
+                            </div>
+
+                            <a
+                                href="${res.data.file_url}"
+                                target="_blank"
+                                class="btn btn-primary">
+
+                                <i class="fa fa-eye"></i>
+                                View Report
+
+                            </a>
+
+                            <a
+                                href="${res.data.file_url}"
+                                download
+                                class="btn btn-success">
+
+                                <i class="fa fa-download"></i>
+                                Download
+
+                            </a>
+
+                        </div>
+
+                    </div>
+                `);
+
+            }else{
+
+                $('#result-div').html(`
+                    <div class="alert alert-danger mt-4">
+                        ${res.message}
+                    </div>
+                `);
+
+            }
+
+        },
+
+        error:function(){
+
+            $('#result-div').html(`
+                <div class="alert alert-danger mt-4">
+                    Something went wrong.
+                </div>
+            `);
+
+        },
+
+        complete:function(){
+
+            $('#searchBtn')
+                .prop('disabled', false)
+                .html('Search');
+
+        }
+
+    });
+
+});
+</script>
 </body>
 </html>
