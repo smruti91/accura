@@ -19,9 +19,13 @@ $currentPage = basename($_SERVER['PHP_SELF']);
                     <li class="nav-item">
                         <a class="nav-link <?= ($currentPage == 'about.php') ? 'active' : '' ?>" href="about.php">About Us</a>
                     </li>
+                      <li class="nav-item">
+                        <a class="nav-link <?= ($currentPage == 'profile.php') ? 'active' : '' ?>" href="profile.php">Profile</a>
+                    </li>
                     <li class="nav-item">
                         <a class="nav-link <?= ($currentPage == 'contact.php') ? 'active' : '' ?>" href="contact.php">Contact Us</a>
                     </li>
+                  
                     <li class="nav-item">
                         <a class="nav-link <?= ($currentPage == 'results.php') ? 'active' : '' ?>" href="results.php">Results</a>
                     </li>

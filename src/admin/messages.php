@@ -29,7 +29,9 @@ if (
 <body>
     <?php include_once __DIR__ . '/includes/sidebar.php'; ?>
     <?php include_once __DIR__ . '/includes/navbar.php'; ?>
-    <div class="container mt-4">
+    <!-- Main Content -->
+    <div class="main-content">
+    <div class="container-fluid p-4">
 
         <div class="card">
 
@@ -93,6 +95,7 @@ if (
         </div>
 
     </div>
+</div>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
 
@@ -110,7 +113,12 @@ if (
     },
 
     columns: [
-        { data: 'id' },
+        {
+            data:null,
+            render:function(data,type,row,meta){
+                return meta.row + meta.settings._iDisplayStart + 1;
+            }
+        },
         { data: 'name' },
         { data: 'email' },
         { data: 'subject' },

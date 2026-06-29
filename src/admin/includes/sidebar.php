@@ -44,7 +44,18 @@ $currentPage = basename($_SERVER['PHP_SELF']);
             <i class="fas fa-users"></i>
             User Details
         </a> -->
-
+        <?php
+          if($_SESSION['user_id'] == 1){
+            ?>
+            <a href="create-user.php"
+                class="<?= ($currentPage == 'create-user.php') ? 'active' : '' ?>">
+                    <i class="fas fa-user"></i>
+                Create User
+            </a>
+            <?php
+          }
+        ?>
+        
         <a href="change-password.php"
            class="<?= ($currentPage == 'change-password.php') ? 'active' : '' ?>">
             <i class="fas fa-key"></i>

@@ -8,8 +8,9 @@ if (
     header('Location: ../login.php');
     exit();
 }
+//print_r($_SESSION);
 ?>
-<!DOCTYPE html>
+<!DOCTYPE html> 
 <html lang="en">
 
 <head>
@@ -313,8 +314,11 @@ if (
                     type: "POST"
                 },
                 columns: [{
-                        data: "id"
-                    },
+            data:null,
+            render:function(data,type,row,meta){
+                return meta.row + meta.settings._iDisplayStart + 1;
+            }
+        },
                     {
                         data: "report_no"
                     },
